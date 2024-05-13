@@ -99,4 +99,43 @@ class StudentRepositoryTest {
         students.forEach(System.out::println);
         System.out.println("\n\n\n");
     }
+
+    @Test
+    @DisplayName("testFindCityWithJPQL")
+    void testFindCityWithJPQL() {
+        // given
+        String city = "서울시";
+
+        // when
+        List<Student> list = studentRepository.getByCityWithJPQL(city);
+        // then
+        assertEquals("춘식이", list.get(0).getName());
+        System.out.println("\n\n\n");
+        list.forEach(System.out::println);
+        System.out.println("\n\n\n");
+    }
+
+    @Test
+    @DisplayName("testSearchNameJPQL")
+    void testSearchNameJPQL() {
+        // given
+        String name = "이";
+
+        // when
+        List<Student> strings = studentRepository.searchByNameWithJPQL(name);
+        // then
+        assertEquals(6, strings.size());
+        strings.forEach(System.out::println);
+    }
+
+    @Test
+    @DisplayName("JPQL로 삭제하기")
+    void testDeleteByJPQL() {
+        // given
+        String name = "대길이";
+        // when
+        studentRepository.deleteByNameWithJPQL(name);
+        // then
+        assertEquals(0, studentRepository.findByName(name).size());
+    }
 }
