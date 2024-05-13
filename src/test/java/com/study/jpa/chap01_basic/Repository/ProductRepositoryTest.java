@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional // jpa 사용 시 달아주어야 하는 아노테이션(spring framework) : jpa는 트랜젝션 단위로 동장하기 때문에 설정
 @Rollback(value = false) // 테스트 클래스에서 트랜잭션 사용하면 자동 Rollback하므로 방지
 class ProductRepositoryTest {
-    @Autowired
+    @Autowired // 주입받기
     ProductRepository productRepository;
 
     @Test
