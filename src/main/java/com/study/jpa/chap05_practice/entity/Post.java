@@ -34,7 +34,7 @@ public class Post {
 
     @CreationTimestamp
     @Column(updatable = false)
-    private LocalDateTime createdDate; // 작성 시간
+    private LocalDateTime createDate; // 작성 시간
 
     @UpdateTimestamp
     private LocalDateTime updatedDate; // 수정 시간
