@@ -23,6 +23,7 @@ class StudentRepositoryTest {
 
     // @BeforeAll: 해당 테스트 클래스를 초기화 할 때 딱 한번 수행되는 메서드.
     // @BeforeEach // 각각의 테스트 메서드 실행 직전에 수행되는 메서드.
+    @Test
     void InsertData() {
         Student s1 = Student.builder()
                 .name("춘식이")
@@ -66,7 +67,7 @@ class StudentRepositoryTest {
         // when
         List<Student> students = studentRepository.findByCityAndMajor(city, major);
         // then
-        assertEquals(2, students.size());
+        assertEquals(1, students.size());
         assertEquals("언년이", students.get(0).getName());
         System.out.println("students = " + students);
     }

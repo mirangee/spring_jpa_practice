@@ -3,6 +3,7 @@ package com.study.jpa.chap02_querymethod.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 
 @Setter // 실무적 측면에서 setter는 신중하게 선택할 것(직접 변경하고자 하는 필드만 따로 설정하는 경우가 많음)
 // jpa에서는 setter를 사용하면 update가 진행되기 때문에 setter 사용은 지양한다(특히 id, name)
@@ -15,8 +16,9 @@ import org.hibernate.annotations.GenericGenerator;
 public class Student {
     @Id
     @Column(name = "stu_id")
-    @GeneratedValue(generator = "uid") // id가 String일 때 이 방식으로 자동 부여 strategy 지정 가능
-    @GenericGenerator(name="uid", strategy = "uuid")
+    @GeneratedValue(strategy = GenerationType.UUID) // Spring Boot3에서 JPA를 사용할 때 권장하는 문법
+//    @GeneratedValue(generator = "uid") // id가 String일 때 이 방식으로 자동 부여 strategy 지정 가능
+//    @GenericGenerator(name="uid", strategy = "uuid")
     private String id;
 
     @Column(name = "stu_name", nullable = false)
