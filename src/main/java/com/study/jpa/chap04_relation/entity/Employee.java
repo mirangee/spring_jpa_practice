@@ -6,7 +6,10 @@ import lombok.*;
 
 @Getter @Setter
 @AllArgsConstructor @NoArgsConstructor
-@EqualsAndHashCode(of = "id") @ToString
+@EqualsAndHashCode(of = "id")
+// JPA 연관관계 맵핑에서 연관관계 데이터는 toString에서 제외해야 한다.
+// 안 그러면 순환 참조 발생
+@ToString(exclude = {"department"})
 @Builder
 @Entity
 @Table(name = "tbl_emp")
@@ -26,7 +29,7 @@ public class Employee {
     // DB 테이블 생성 시 dept_id 컬럼이 생성된 것을 확인할 수 있다.
 
     // 단방향 연관 맵핑(Employee만 Department 정보를 가지고 있다)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dept_id") // 테이블 컬럼 명
     private Department department;
 }
