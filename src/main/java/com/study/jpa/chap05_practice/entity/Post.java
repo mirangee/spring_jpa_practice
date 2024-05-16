@@ -39,7 +39,7 @@ public class Post {
     @UpdateTimestamp
     private LocalDateTime updatedDate; // 수정 시간
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
     @Builder.Default // Builder 패턴으로 객체를 생성할 때 특정 필드를 직접 지정한 값으로 초기화 강제 명령.
     private List<HashTag> hashTags = new ArrayList<>(); // 해시태그
     
