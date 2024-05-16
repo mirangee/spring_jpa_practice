@@ -1,9 +1,7 @@
 package com.study.jpa.chap05_practice.service;
 
-import com.study.jpa.chap05_practice.dto.PageDTO;
-import com.study.jpa.chap05_practice.dto.PageResponseDTO;
-import com.study.jpa.chap05_practice.dto.PostDetailResponseDTO;
-import com.study.jpa.chap05_practice.dto.PostListResponseDTO;
+import com.study.jpa.chap05_practice.dto.*;
+import com.study.jpa.chap05_practice.entity.HashTag;
 import com.study.jpa.chap05_practice.entity.Post;
 import com.study.jpa.chap05_practice.repository.HashTagRepository;
 import com.study.jpa.chap05_practice.repository.PostRepository;
@@ -55,5 +53,52 @@ public class PostService {
                 // JPA가 준 페이지 정보가 담긴 객체를 DTO에게 전달해서 그쪽에서 알고리즘 돌리게 시킴
                 .posts(detailList)
                 .build();
+    }
+
+    public PostDetailResponseDTO getDetail(Long id) throws Exception {
+        Post post = postRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException(id+"번 게시물이 존재하지 않습니다."));
+        return new PostDetailResponseDTO(post);
+    }
+
+    public PostDetailResponseDTO insert(PostCreateDTO dto) throws Exception {
+        // 게시물 저장(해시태그는 아직 저장되지 않음)
+        Post saved = postRepository.save(dto.toEntity());
+
+        // 해시태그 저장
+        List<String> hashTags = dto.getHashTags();
+        if (hashTags != null && !hashTags.isEmpty()) {
+            hashTags.forEach(ht -> {
+                HashTag hashTag = HashTag.builder()
+                        .tagName(ht)
+                        .post(saved) // 게시물 저장된 post 객체를 전달
+                        .build();
+                HashTag savedTag = hashTagRepository.save(hashTag);
+
+                /*
+                    Post Entity는 데이터 베이스에 save할 때 hashTags를 insert하지 않고
+                    HashTag Entity는 따로 save를 진행한다.(테이블이 Post, HashTag 각각 나뉘어 있음)
+
+                    HashTag는 양방향 맵핑이 되어 있는 연관관계의 주인이기 때문에
+                    save를 진행할 때 Post를 전달하므로 DB와 Entity의 상태가 동일하다.
+                    하지만 Post는 연관관계 주인이 아니므로 HashTag의 정보가 비어있으며 조회용(mappedBy)으로만 설정된 상태이다.
+                    그러므로 위에 작성된 'saved' 객체의 hashTagList는 null이기 때문에 에러가 난다.
+                    
+                    이 문제를 해결하기 위해 Post Entity에 연관관계 편의 메서드를 작성해
+                    save된 HashTag의 내용을 바로 hashTag List에 동기화해야 한다.
+                    Post를 화면단으로 return할 때 HashTag들도 같이 전달되어야 하므로.
+                    (Post 객체에서 hashTagList에 @Builder.Defualt 설정 필수!)
+                    
+                    (다른 해결 방법으로는 Entity Manager를 주입받아 Insert 완료 후 Select를 하게 하는 방법도 있다.
+                    Entity Manager를 주입 받아 강제 Flush()하면 Insert를 트랜잭션 종료 후 실행할 수 있다)
+                 */
+
+                saved.addHashTag(savedTag);
+            });
+        }
+
+
+        // 방금 insert 요청한 게시물 정보를 DTO로 전달
+        return new PostDetailResponseDTO(saved);
     }
 }
